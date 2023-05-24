@@ -20,7 +20,6 @@ def conectar():
     return conexion
 
 def reporte_nro_asistencias(dni):
-
     db = conectar()
     cursor = db.cursor()
     query = '''SELECT TIPO_ASISTENCIA, COUNT(*) FROM ASISTENCIA WHERE DNI_ADMINISTRATIVO LIKE %s GROUP BY TIPO_ASISTENCIA'''
@@ -137,25 +136,25 @@ def registrar_asistencia(dni_administrativo):
     resultados = cursor.fetchall()
     if not resultados:
         if hora < datetime.strptime('13:00:00', '%H:%M:%S').time():
-            if hora > datetime.strptime('08:00:00', '%H:%M:%S').time():
+            if hora > datetime.strptime('07:30:00', '%H:%M:%S').time():
                 # Registrar tardanza
                 print("Tardanza")
                 query = '''INSERT INTO ASISTENCIA (DNI_ADMINISTRATIVO, FECHA, HORA_ENTRADA, TIPO_ASISTENCIA) 
                            VALUES (%s,%s,%s,"TARDANZA")'''
             else: 
                 # Registrar asistencia
-                if hora > datetime.strptime('05:00:00', '%H:%M:%S').time():
+                if hora > datetime.strptime('06:00:00', '%H:%M:%S').time():
                     print("Presente")
                     query = '''INSERT INTO ASISTENCIA (DNI_ADMINISTRATIVO, FECHA, HORA_ENTRADA, TIPO_ASISTENCIA) 
                                VALUES (%s,%s,%s,"PRESENTE")'''
             values = (dni_administrativo, dia, hora,)
             cursor.execute(query, values)
-        else:
+        #else:
             # Registrar falta
-            print("Falta")
-            values = (dni_administrativo, dia,)
-            query = '''INSERT INTO ASISTENCIA (DNI_ADMINISTRATIVO, FECHA, TIPO_ASISTENCIA) VALUES (%s,%s,"FALTA")'''
-            cursor.execute(query, values)
+        #    print("Falta")
+        #    values = (dni_administrativo, dia,)
+        #    query = '''INSERT INTO ASISTENCIA (DNI_ADMINISTRATIVO, FECHA, TIPO_ASISTENCIA) VALUES (%s,%s,"FALTA")'''
+        #     cursor.execute(query, values)
 
     else:
         hora_entrada = resultados[0][3]
@@ -166,7 +165,5 @@ def registrar_asistencia(dni_administrativo):
             values = (hora, dni_administrativo, dia)
             cursor.execute(query, values)
     db.commit()
-
     cursor.close()
     db.close()
-
